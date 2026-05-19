@@ -1,0 +1,18 @@
+# GPU Energy Agent — pinned Python dependencies
+# Keep in sync with pyproject.toml [project.dependencies]
+# Update procedure: pip install --upgrade <pkg>, test, then bump the pin here.
+
+# NVML Python bindings for GPU metrics
+nvidia-ml-py==13.590.48
+
+# HTTP requests for API communication
+requests==2.32.3
+
+# Environment variable management
+python-dotenv==1.0.1
+
+# Rich console formatting
+rich==13.9.4
+
+# Gemini AI for GreenTune Agent
+google-genai>=2.0.0

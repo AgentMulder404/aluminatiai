@@ -1,0 +1,83 @@
+# AluminatAI GPU Energy Monitoring Agent — systemd service unit
+#
+# Install:
+#   sudo cp aluminatai-agent.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now aluminatai-agent
+#
+# Or use the installer:  aluminatiai service install
+# Or:  curl -sSL https://get.aluminatiai.com | bash
+
+[Unit]
+Description=AluminatAI GPU Energy Monitoring Agent
+Documentation=https://aluminatiai.com/docs/agent
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=aluminatai
+Group=aluminatai
+
+# Read API key and settings from the env file.
+# Sensitive values (API key) live here with mode 600.
+EnvironmentFile=/etc/aluminatai/agent.env
+
+# DATA_DIR and LOG_DIR are set here so the agent writes outside the install dir.
+# Override in agent.env if you prefer different paths.
+Environment=DATA_DIR=/var/lib/aluminatai
+Environment=LOG_DIR=/var/log/aluminatai
+
+ExecStart=/usr/local/bin/aluminatiai
+
+# Restart on any non-zero exit, including OOM kills.
+Restart=on-failure
+RestartSec=10s
+
+# Give the agent time to flush the WAL on shutdown before SIGKILL.
+TimeoutStopSec=30s
+
+# Watchdog: systemd kills + restarts the service if it hangs for >120s.
+# The agent must call sd_notify(WATCHDOG=1) if WatchdogSec is active.
+# Disabled by default; enable once watchdog notify support is added.
+# WatchdogSec=120s
+
+# ── Security hardening ────────────────────────────────────────────────────────
+
+# Prevent the agent from gaining new privileges via setuid/setgid.
+NoNewPrivileges=true
+
+# Mount /usr, /boot, /efi read-only (agent only reads its own data dir).
+ProtectSystem=strict
+
+# Hide /home and /root from the agent process.
+ProtectHome=true
+
+# Give the process a private /tmp that is invisible to other users.
+PrivateTmp=true
+
+# Allow writes only to the data and log directories.
+ReadWritePaths=/var/lib/aluminatai /var/log/aluminatai
+
+# The agent reads /proc/<pid>/environ and /proc/<pid>/cmdline to attribute jobs.
+# /proc is always accessible regardless of ProtectSystem.
+
+# Restrict dangerous kernel calls. "system-service" is a safe broad filter.
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Drop ambient capabilities the agent does not need.
+CapabilityBoundingSet=
+
+# ── Resource limits ───────────────────────────────────────────────────────────
+
+# Resident memory cap. Increase if running many GPUs with large WAL replay.
+MemoryMax=256M
+
+# Enough file descriptors for WAL file + network sockets + Prometheus.
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

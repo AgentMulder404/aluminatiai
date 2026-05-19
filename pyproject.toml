@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aluminatiai"
+version = "0.3.0"
+description = "GPU energy monitoring agent — per-job cost attribution and energy-efficient fine-tuning for AI teams"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+keywords = ["gpu", "monitoring", "energy", "mlops", "cost", "nvidia", "amd", "rocm", "fine-tuning", "greentune"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "nvidia-ml-py>=12.0.0",
+    "requests>=2.28",
+    "python-dotenv>=1.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+prometheus    = ["prometheus-client>=0.19"]
+secure        = ["cryptography>=42.0"]
+observability = ["PyYAML>=6.0"]
+benchmark     = ["numpy>=1.24"]
+dcgm          = ["pydcgm>=3.0"]
+finetune      = [
+    "torch>=2.0",
+    "transformers>=4.40",
+    "peft>=0.10",
+    "trl>=0.8",
+    "datasets>=2.18",
+    "bitsandbytes>=0.43",
+    "accelerate>=0.28",
+]
+swarm         = []
+greentune     = [
+    "aluminatiai[finetune]",
+]
+all           = [
+    "prometheus-client>=0.19",
+    "cryptography>=42.0",
+    "PyYAML>=6.0",
+    "numpy>=1.24",
+    "aluminatiai[greentune]",
+]
+
+[project.scripts]
+aluminatiai = "aluminatiai.cli:main"
+
+[project.urls]
+Homepage = "https://aluminatiai.com"
+Documentation = "https://aluminatiai.com/docs/agent"
+Repository = "https://github.com/AgentMulder404/aluminatiai"
+"Bug Tracker" = "https://github.com/AgentMulder404/aluminatiai/issues"
+
+# Map the Python package `aluminatiai` to the files in this directory (agent/).
+# All sibling directories that have __init__.py become subpackages.
+[tool.setuptools]
+packages = [
+    "aluminatiai",
+    "aluminatiai.attribution",
+    "aluminatiai.integrations",
+    "aluminatiai.schedulers",
+    "aluminatiai.efficiency",
+    "aluminatiai.finetune",
+]
+
+[tool.setuptools.package-dir]
+aluminatiai               = "."
+"aluminatiai.attribution"  = "attribution"
+"aluminatiai.integrations" = "integrations"
+"aluminatiai.schedulers"   = "schedulers"
+"aluminatiai.efficiency"   = "efficiency"
+"aluminatiai.finetune"     = "finetune"
+
+[tool.setuptools.package-data]
+"aluminatiai" = ["*.txt", "*.md"]
