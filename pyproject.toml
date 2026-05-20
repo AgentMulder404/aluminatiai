@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aluminatiai"
-version = "0.3.0"
+version = "0.3.1"
 description = "GPU energy monitoring agent — per-job cost attribution and energy-efficient fine-tuning for AI teams"
 readme = "README.md"
 license = { text = "Apache-2.0" }

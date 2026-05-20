@@ -14,4 +14,4 @@
 #
 # AluminatiAI — https://github.com/AgentMulder404/AluminatAI
 """AluminatAI GPU agent package."""
-__version__ = "0.3.0"
+__version__ = "0.3.1"
